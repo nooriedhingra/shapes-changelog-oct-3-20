@@ -1,174 +1,200 @@
 # Shapes.inc Changelog - October 9, 2025
 
-## Room Skills Settings Redesign
+## Rainbow Profile Picture Borders
 
-Completely redesigned room skills/tools settings with a "stage, then save" workflow.
+Premium users can now show off with animated rainbow borders around their avatars.
+
+**How it works:**
+- Premium users automatically get rainbow border option
+- Border shows everywhere: messages, profiles, sidebar, participant lists
+- Smooth animated gradient effect
+- Controlled via `UserAvatar` component (applies globally)
+
+**Why we built this:**
+Users wanted more ways to flex premium status. Rainbow borders are eye-catching without being obnoxious.
+
+**Implementation:**
+- CSS gradient animation on avatar wrapper
+- Respects user's premium status from profile metadata
+- No performance impact (GPU-accelerated)
+
+---
+
+## Display Name Styling Improvements
+
+Display names now render with consistent styling across messages and profiles.
 
 **What changed:**
-- Old: Toggles saved instantly, confusing UX
-- New: Stage all changes → click Save → changes commit
+- Display names use proper font weights and colors
+- Consistent appearance in messages, chat headers, mentions
+- Better readability in dark mode
 
-**How it works:**
-- Radio-style card selection for enabling/disabling:
-  - Master skills toggle
-  - Individual Shape skills
-  - MCP servers
-  - Webhook groups
-- Floating Save/Cancel bar stays visible while scrolling
-- Dirty state tracking shows unsaved changes
-- All changes apply atomically on Save
-
-**Technical details:**
-- Draft state management for staged edits
-- Card-based UI matching multi-message toggle design
-- Local enablement drafts with dirty tracking callbacks
-- Documented in `architecture/SHAPES_INC_UI_CHANGES.md`
-
-**Why:**
-Users were confused when toggles saved instantly. "Stage then save" gives you control — review all changes before committing.
+**Note:** Some surfaces (chat header, mentions) still use old styling. Full rollout coming in next PR with shared component.
 
 ---
 
-## Share Rooms to Directory
+## Room Skills Settings Redesign (Stage & Save)
 
-Added "Room Directory" quick action to share dialog.
+Completely redesigned how room owners manage Shapes skills, MCP servers, and webhooks.
 
-**What's new:**
-- Share dialog → "Room Directory" button
-- List your room in the public directory
-- Refresh directory listing without leaving modal
-- One-click publish/unpublish
+**What changed:**
+- New "stage then save" flow instead of instant updates
+- Radio card selection style (matches multi-message UI)
+- Toggle skills, MCP servers, webhooks in one pass → click Save
+- Floating Save/Cancel toolbar stays visible while scrolling
+- Draft state management shows pending changes
+
+**Why the redesign:**
+Old UI saved on every interaction, causing API spam and confusing state. New flow lets you preview changes before committing.
 
 **How it works:**
-- Click share icon → "Room Directory" option
-- Room gets listed in `/directory`
-- Owners can update directory listing anytime
+1. Open Room AI Settings → Skills tab
+2. Toggle core skills, MCP servers, or webhook groups
+3. UI shows "dirty" state (unsaved changes)
+4. Click Save to commit, or Cancel to revert
 
 **Technical details:**
-- Integrated into existing share dialog component
-- Uses directory API (`/api/featured-rooms`)
-- Documented in `architecture/room-directory-voting.md`
-
-**Why:**
-Users were asking "how do I list my room in the directory?" Now it's one click from the share menu.
+- Draft state in `room-ai-settings.tsx`
+- Radio cards in `custom-tools-card.tsx`, `mcp-servers-section.tsx`, `shapes-tools-section.tsx`
+- Dirty tracking callbacks report pending work to parent
+- Architecture doc updated: `SHAPES_INC_UI_CHANGES.md`
 
 ---
 
-## Premium Tag on Room Directory Cards
+## Premium Tags on Room Directory Cards
 
 Room cards in the directory now show "Premium" or "Standard" badges.
 
-**What's new:**
-- Crown icon badge on premium rooms
-- "Standard" badge on non-premium rooms
-- Badges show in directory feed and search results
+**What you see:**
+- Crown icon + "Premium" badge for sponsored rooms or premium-only rooms
+- "Standard" badge for free rooms
+- Shown on room cards in `/rooms` directory
 
-**How it works:**
-- Directory API includes `hasPremiumCredits` and `isSponsored` flags
-- Cards render badge based on premium status
-- No extra client fetches needed
+**Why this matters:**
+Users couldn't tell which rooms required premium or credits before clicking in. Now it's visible at a glance.
 
-**Technical details:**
-- Added premium metadata to `/api/featured-rooms`
-- Updated directory card UI component
-- Documented in `architecture/room-directory-voting.md`
-
-**Why:**
-Users wanted to know which rooms had premium features before joining. Now it's visible upfront.
+**Implementation:**
+- `/api/featured-rooms` enriched with `hasPremiumCredits` and `isSponsored` flags
+- Badge rendering in room directory cards
+- No extra client fetches (data comes in initial load)
+- Architecture doc: `room-directory-voting.md`
 
 ---
 
-## Rainbow Profile Picture Borders
+## Share to Room Directory
 
-Added rainbow animated borders for profile pictures (cosmetic unlock).
-
-**What's new:**
-- Rainbow gradient border animation on user avatars
-- Applied automatically across entire app
-- Shows on messages, sidebar, profiles, etc.
+New "Room Directory" quick action in share dialog.
 
 **How it works:**
-- `UserAvatar` component renders rainbow border
-- Animation loops continuously
-- Visible everywhere avatars appear
-
-**Technical details:**
-- CSS gradient animation
-- Applied at component level, propagates globally
+- Open room share dialog
+- Click "Room Directory" button
+- Room gets listed in public directory (or refreshes if already listed)
+- No need to navigate away from share modal
 
 **Why:**
-Fun cosmetic feature for premium users or special achievements. More customization options coming.
+Users were confused about how to list rooms in the directory. Now it's one click from the share menu.
+
+**Implementation:**
+- Share dialog action button calls directory listing API
+- Success toast confirms listing
+- Architecture doc updated: room directory workflow
 
 ---
 
-## Display Name CSS Improvements
+## Message Context Menu Improvements
 
-Fixed display name styling across the app.
+Fixed UX issues with the message action menu (3-dot menu).
 
 **What changed:**
-- Display names now render consistently with proper truncation
-- Fixed overflow issues in message headers
-- Improved readability with better spacing
+- Menu now shows 4.5 items (not 4) to hint at scrollability
+- Gradient fade at bottom indicates more options
+- Reordered actions: high-frequency actions at top, destructive at bottom
+  - New order: Edit, Regenerate, Reply, Copy, Chat now, Branch off, Delete, Report
+- "Branch off" moved after "Chat now" (logical grouping)
 
-**Note:** Display names not yet updated in chat headers, mentions, and other places. Full rollout coming in next PR.
-
----
-
-## Bug Fixes & UX Improvements
-
-**Improved Chat Menu Scrollability and Action Order**
-
-Message context menu (3-dot menu) improvements:
-- Shows 4.5 items instead of 4 → clearer scroll affordance
-- Added gradient fade to indicate more options
-- Reordered actions by priority:
-  - High-frequency actions (Edit, Regenerate) at top
-  - Destructive actions (Delete, Report) at bottom
-  - "Branch off" moved after "Chat now"
-
-**Before:** Menu showed exactly 4 items, users didn't know there were more options.
-
-**After:** Partial 5th item visible with gradient fade, better action hierarchy.
-
-**Fixed Forums Page Layout Bugs**
-
-- Long forum titles/descriptions now wrap properly (no more text bleeding)
-- Entire forum card is tappable (except vote button)
-- Upvote button moved below summary for better UX
-- Sidebar trigger is now a proper square on mobile
-
-**Fixed Create Room With "Chat Now" Dialog**
-
-Room creation from "Chat Now" dialog was broken. Fixed initialization flow.
-
-**Removed Room Shape Settings Collection**
-
-Cleaned up redundant data structure. Now relying solely on `room-shapes` collection for Shape settings.
-
-**Fixed Slow Mode Reset on Room Switch**
-
-Slow mode was resetting when switching rooms. Fixed Redis TTL to persist per-room slow mode windows.
-
-**Technical details:**
-- Cached `roomWindowSeconds` during rate-limit check
-- Updated `recordMessage` to accept optional window parameter
-- Documented in `architecture/MODERATION_AND_BANS.md`
-
-**Don't Show Kick/Ban/Delete in User DMs**
-
-Message context menu in user DMs no longer shows:
-- Kick/Ban options (never made sense in DMs)
-- Delete option (unless it's your own message)
-
-**Fixed:**
-- Server-side auth check for DM message deletion
-- Client-side menu logic hides irrelevant actions
-- Documented in `architecture/API_ROUTES_ALPHABETICAL.md`
-
-**Tracking User Engagement in Bulk**
-
-Added bulk user engagement tracking for analytics. Batches user activity events for better performance.
+**Why:**
+Old menu showed exactly 4 items with no scroll indicator. Users didn't know there were more options. Reordering puts most-used actions within easy reach.
 
 ---
 
-*Shipped by the team at [shapes.inc](http://shapes.inc). Got feedback? Drop it in #suggestions or the forums!*
+## DM Moderation Fixes
+
+Fixed inappropriate moderation options showing in user DMs.
+
+**What we fixed:**
+- Removed "Kick" and "Ban" options from DM message menus
+- "Delete" only shows for your own messages in DMs
+- Server-side check enforces DM deletion rules (only author can delete)
+
+**Before:**
+DMs showed kick/ban/delete options for all messages (made no sense).
+
+**After:**
+DMs only show relevant actions (reply, copy, edit your own, delete your own).
+
+**Technical approach:**
+- Thread `isUserDM`/`isShapeDM` flags through message component
+- API route checks `chat.chatType === 'user_dm'` before allowing deletion
+- Architecture doc updated: `API_ROUTES_ALPHABETICAL.md`
+
+---
+
+## Slow Mode Persistence Fix
+
+Fixed slow mode resetting when switching rooms.
+
+**What was broken:**
+Slow mode (rate limiting) would reset to 1 minute when you switched rooms, even if configured for 5 minutes.
+
+**Root cause:**
+Redis TTL was hardcoded to 60 seconds instead of using room's configured window.
+
+**Solution:**
+- Cache `roomWindowSeconds` during rate-limit check
+- Forward window to `recordMessage` in Redis
+- Use `Math.max(1, window)` when setting TTL
+- Now persists correctly across room switches
+
+**Implementation:**
+- Updated `lib/rate-limiter.ts` to accept optional window param
+- Architecture doc: `MODERATION_AND_BANS.md`
+
+---
+
+## Forums UI Fixes
+
+Fixed layout issues on forums page (mobile + desktop).
+
+**What we fixed:**
+- Long forum titles/descriptions now wrap instead of bleeding off screen
+- Whole forum card is tappable (except upvote button)
+- Upvote button moved below summary for better touch targets
+- Mobile sidebar trigger is proper square (was stretched)
+
+**Before:**
+Long titles would overflow, cards had dead zones, upvote button too close to text.
+
+**After:**
+Clean card layout, clear tap targets, proper text wrapping.
+
+---
+
+## Removed Legacy Code
+
+**Room Shape Settings Collection Removed**
+
+Deleted old `room-shape-settings` collection. Now relying on `room-shapes` only. Cleaner data model, less duplication.
+
+**Create Room with "Chat Now" Dialog Fix**
+
+Fixed broken "Create room with Shape" option in chat now dialog. Was throwing errors, now works correctly.
+
+---
+
+## User Engagement Tracking (Backend)
+
+Added bulk user engagement tracking for analytics. Tracks message sends, room joins, Shape interactions. Frontend metrics coming next.
+
+---
+
+*Shipped by the team at [shapes.inc](http://shapes.inc). Drop feedback in [Forums](/forums)!*
