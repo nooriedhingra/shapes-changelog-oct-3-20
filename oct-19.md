@@ -1,109 +1,56 @@
 # Shapes.inc Changelog - October 19, 2025
 
-## Markdown Support in Room Descriptions
+## Unified Sidebar: Combined DMs and Rooms
 
-Room descriptions now support full Markdown formatting.
+Merged DMs and rooms into a single unified sidebar for simpler navigation.
 
-**What you can do:**
-- **Bold**, *italic*, ~~strikethrough~~
-- Links: [example](https://example.com)
-- Lists (bulleted and numbered)
-- Code blocks
-- Headings
-
-**Where it shows:**
-- Room directory cards
-- Room info modal
-- Join page
-- Room settings preview
-
-**Technical details:**
-- Uses same Markdown renderer as messages
-- Sanitized HTML output (security)
-- Preserves formatting in all views
-
-**Why:**
-Room descriptions were plain text only. Markdown lets you create better-structured, more informative descriptions.
-
----
-
-## Room Templates Feature
-
-Save room configurations as templates for quick reuse.
+**What changed:**
+- One sidebar instead of two tabs
+- All conversations (DMs + rooms) in one list
+- Sorted by: Pinned → Recent activity → Alphabetical
+- Cleaner, simpler mental model
 
 **How it works:**
-- Room settings → "Save as template"
-- Name your template
-- Template saves: AI settings, permissions, moderation, skills
-- Create new room from template in one click
-
-**What gets saved:**
-- Shape selections
-- Room preset
-- Custom instructions
-- Skill toggles
-- MCP servers
-- Moderation settings (slow mode, banned words, etc.)
-- Privacy settings
+- Open sidebar → see all your chats
+- DMs show user avatars
+- Rooms show room avatars
+- Both types mixed together by recency
 
 **Technical details:**
-- New `room_templates` table
-- Template creation/listing APIs
-- One-click room cloning from template
-- Documented in architecture notes
+- Unified data fetching
+- Combined sorting algorithm
+- Preserved pin/favorite state
+- Optimized rendering performance
 
 **Why:**
-Power users were recreating the same room setup over and over. Templates let you reuse configurations instantly.
-
----
-
-## Notification Preferences Granularity
-
-More control over what notifications you receive.
-
-**New settings:**
-- DM notifications: All | Mentions only | None
-- Room notifications: All | Mentions only | None
-- Email notifications: Immediately | Daily digest | Never
-- Shape activity notifications toggle
-
-**Where to configure:**
-Settings → Notifications
-
-**Technical details:**
-- Granular notification preferences in user profile
-- Backend respects all preferences
-- Real-time preference sync
-
-**Why:**
-All-or-nothing notification settings were too rigid. Now you can fine-tune exactly what you want to be notified about.
+Switching between "DMs" and "Rooms" tabs was unnecessary friction. Unified sidebar puts everything in one place.
 
 ---
 
 ## Bug Fixes & UX Improvements
 
-**Fixed Room Creation Modal Scroll**
+**Renamed "Channels" to "Rooms"**
 
-Modal now properly scrolls on mobile when keyboard is open.
+Consistent terminology across the app. Everything is now called "rooms" (not channels).
 
-**Improved Markdown Rendering Performance**
+**Fixed Skeleton Loading State**
 
-Optimized Markdown parser for faster message rendering:
-- ~30% faster parse time
-- Better handling of large messages
-- Reduced memory usage
+Sidebar skeleton now matches actual content layout (less visual jump when loading).
 
-**Fixed Shape Avatar Upload**
+**Improved Mobile Sidebar Performance**
 
-Shape avatar upload now properly validates image dimensions and file size.
+Faster rendering on smartphones:
+- Virtualized list for 100+ rooms
+- Lazy avatar loading
+- Reduced rerender cycles
 
-**Improved Search Result Highlighting**
+**Fixed Search Modal Focus**
 
-Search results now highlight matched keywords in yellow.
+Search modal now properly focuses input on open (mobile + desktop).
 
-**Fixed Mention Autocomplete**
+**Improved Unread Badge Positioning**
 
-@ mention autocomplete now filters results as you type (was showing all users).
+Unread count badges now properly align on all avatar sizes.
 
 ---
 
