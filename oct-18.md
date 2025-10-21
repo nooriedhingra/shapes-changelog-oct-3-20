@@ -1,72 +1,173 @@
 # Shapes.inc Changelog - October 18, 2025
 
-## Profile Page Performance Improvements
+## Per-Room Skills Configuration
 
-Optimized profile page loading and rendering.
+Configure which Skills are enabled on a per-room basis.
 
-**What changed:**
-- Lazy load profile sections
-- Reduced initial bundle size
-- Faster time-to-interactive
-- Better mobile performance
+**What's new:**
+- Room settings → Skills tab
+- Toggle individual Skills (web search, image gen, code, etc.)
+- Skills respect room-level config
+- Default: all Skills enabled
+
+**How it works:**
+- Room owner opens settings → Skills  
+- Toggle Skills on/off for that room
+- Shapes in that room only use enabled Skills
+- Persisted in room metadata
 
 **Technical details:**
-- Code splitting for heavy components
-- Deferred non-critical data fetches
-- Optimized image loading
-- Documented in performance notes
+- New room skills config system
+- Frontend UI for toggling
+- Backend respects room-level overrides
+- Falls back to global defaults
 
-**Results:**
-- ~40% faster initial load
-- Smoother scrolling on mobile
-- Lower memory usage
+**Why:**
+Some rooms don't need all Skills (e.g., study room doesn't need image gen). Per-room config gives owners fine control.
 
 ---
 
-## Improved Shape Discovery
+## Shapes Chat Free Will Simplified
 
-Enhanced Shape discovery page with better filtering and search.
+Removed confusing "free will" toggle, kept only reactions.
 
-**What's new:**
-- Category filters (Roleplay, Productivity, Creative, etc.)
-- Sort by: Popular, Recent, Top Rated
-- Search with autocomplete
-- Featured Shapes section
+**What changed:**
+- Removed "allow free will" setting
+- Kept "allow reactions" toggle
+- Cleaner room settings UI
+- Simpler mental model
 
 **Technical details:**
-- Updated discovery API
-- Client-side filter caching
-- Optimistic UI updates
+- Removed free will logic from backend
+- Shapes only respond when mentioned (default)
+- Reaction permissions still configurable
 
 **Why:**
-Old discovery page was hard to navigate. New filters make it easy to find relevant Shapes.
+"Free will" was confusing users. Simplifying to mentions-only makes behavior predictable.
+
+---
+
+## Shape Directory Modal Improvements
+
+Better UX for adding Shapes from directory.
+
+**What's new:**
+- DM and Dashboard buttons in Shape modal
+- Fullscreen modal on smartphones
+- Better touch targets
+- Cleaner layout
+
+**Technical details:**
+- Mobile-responsive modal
+- Added quick action buttons
+- Improved touch hit areas
+
+**Why:**
+Adding Shapes from directory required too many clicks. New modal streamlines the flow.
+
+---
+
+## Room Directory Search Improvements
+
+All room types now searchable via command palette.
+
+**What's new:**
+- Search includes: Favorites, Hidden, Community, DMs
+- Room avatars in search results
+- Favorites indicator (⭐)
+- Better result grouping
+
+**Technical details:**
+- Unified search across all room types
+- Client-side filtering
+- Avatar rendering in dropdown
+- Optimized query performance
+- Fixed z-index bleeding
+
+**Why:**
+Search was missing hidden DMs and community rooms. Now it searches everything.
+
+---
+
+## Room-Level Credit Opt-Out UI
+
+Protect your credits by opting out of premium usage in specific rooms.
+
+**What's new:**
+- Room settings → AI Configuration → "Don't Use My Credits"
+- Toggle on: your credits won't be consumed in this room
+- Toggle off: normal credit usage
+- Per-room setting (not global)
+
+**How it works:**
+- Join premium room → credits normally consumed
+- Enable opt-out for that room → credits protected
+- Room still works (uses room owner's credits or community pool)
+
+**Technical details:**
+- New user-room credit opt-out table
+- Backend checks opt-out before charging
+- Apple-style toggle UI (simple + clear)
+- Moved to AI configuration page
+
+**Why:**
+Users wanted to join premium rooms without spending credits. Opt-out lets you participate without financial risk.
 
 ---
 
 ## Bug Fixes & UX Improvements
 
-**Fixed Chat Input Focus Issues**
+**Fixed Banner Fallback Style**
 
-Chat input no longer steals focus unexpectedly on mobile.
+Profile and room banners now properly fallback when no image set.
 
-**Fixed Room Member List Sorting**
+**Clean Debug Logs**
 
-Member list now properly sorts by: Owner → Moderators → Members → Offline
+Removed all debug console.logs from production build.
 
-**Improved Loading States**
+**Stabilized Rooms Provider**
 
-Better loading indicators across the app:
-- Skeleton screens instead of spinners
-- Progressive content loading
-- Smoother transitions
+Backend stability improvements for room data fetching:
+- Less errors
+- Faster loads
+- Better error handling
 
-**Fixed Notification Badge Count**
+**Add Banners to Video Tiles**
 
-Notification badges now accurately reflect unread count.
+Video call tiles now show user profile pictures when camera is off.
 
-**Before:** Badge would show stale counts or not update.
+**Directory UI Improvements (Mobile)**
 
-**After:** Real-time accurate counts.
+Smartphone optimizations:
+- Better touch targets
+- Responsive cards
+- Fixed bleeding issues
+- Improved scrolling
+
+**Don't Show Community Rooms in Recent Rooms**
+
+Community rooms no longer clutter "Recent Rooms" section on homepage.
+
+**Hide Copy Request ID for Non-Editorial**
+
+"Copy Request ID" debugging feature now only shows for editorial staff.
+
+**Automatically Open Video Call Overlay**
+
+When starting/joining a call, video overlay auto-opens (don't need to click separately).
+
+**Unified Native-Style Share Dialog**
+
+Redesigned share dialog:
+- Native social platform support (WhatsApp, Twitter, Instagram, Snapchat, LinkedIn)
+- Custom social icons
+- Responsive layout
+- Better deep linking
+- Fixed room modal routing
+
+**Fixed Participants Tab**
+
+Room modal "Participants" tab now opens correctly (was broken, clicking did nothing).
 
 ---
 
