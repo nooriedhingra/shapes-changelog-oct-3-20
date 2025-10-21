@@ -2,141 +2,138 @@
 
 ## Community Forums
 
-New community forums for posting feature requests, suggestions, and discussions.
+Launched community forums where users can post feature requests, suggestions, and discuss Shapes.
 
-**What's new:**
-- Create discussion topics in `/forums`
+**What you can do:**
+- Create discussion topics in /forums
 - Browse "Latest" or "Top (7d)" threads
 - Upvote forums and individual comments
-- Threaded comment replies (max depth: 5 levels)
-- Soft deletion with moderation checks
-- Infinite scroll pagination
+- Reply in threaded comments (up to 5 levels deep)
+- Delete your own threads or comments
+- Editorial staff can archive entire forums
 
 **How it works:**
-- Click "Forums" in Shapes Community sidebar
-- Create new thread → title + description
-- Comment on threads, reply to comments
-- Upvote/downvote posts and comments
-- Delete your own threads, staff can archive any thread
-
-**Technical details:**
-- New tables: `forums`, `forum_comments`, `forum_votes`, `forum_comment_votes`
-- Server-side helpers in `lib/forums-server.ts`
-- API routes: `/api/forums`, `/api/forums/[slug]`, `/api/forums/[slug]/comments`, etc.
-- SWR hooks for infinite feed and real-time vote updates
-- Recursive comment tree rendering with optimistic updates
+- New "Forums" section in Shapes Community sidebar
+- Create topic → add title + body → publish
+- Comments nest recursively with vote counts
+- Soft deletion preserves thread structure
+- Moderation tools for editorial team
 
 **Why we built this:**
-Users were DMing us feature requests and filing GitHub issues for product feedback. Now there's a dedicated space for community-driven discussion and voting on what we should build next.
+Users were dropping feature requests in random rooms or DMing support. Now there's a dedicated space for product feedback and community discussion. Upvotes surface the most-wanted features.
+
+**Technical details:**
+- New database tables: `forums`, `forum_comments`, `forum_votes`, `forum_comment_votes`
+- Server-side helpers in `lib/forums-server.ts` handle creation, commenting, voting, deletion
+- SWR hooks (`use-forums.ts`) for infinite pagination and optimistic vote updates
+- Recursive comment rendering with vote handling (`forum-comment-thread.tsx`)
+- Alert dialogs for destructive actions (delete confirmation)
+- Architecture doc: `architecture/forums.md`
+
+**URLs:**
+- Forum list: `/forums`
+- Forum detail: `/forums/[slug]`
 
 ---
 
-## Room-Level Multi-Message Toggle
+## Room-Level Message Grouping Toggle
 
-Per-room control over whether AI Shapes can send multiple messages in a row.
-
-**What's new:**
-- Room settings → AI Settings → "Allow Multiple Messages" toggle
-- Override Shape's default multi-message behavior
-- Reset to Shape default with one click
-- Works on room creation and cloned rooms
+Room owners can now override whether AI messages are grouped or sent individually.
 
 **How it works:**
-- Each room can enable/disable multi-message mode independently
-- Falls back to Shape's default if no override set
-- Cloned rooms inherit source room's setting
-- Real-time UI updates with optimistic rendering
+- New toggle in Room AI Settings: "Allow multiple messages"
+- When enabled, AI can send multiple messages in a row (like a human conversation)
+- When disabled, AI sends one consolidated response
+- Overrides the Shape's default behavior for that room
 
-**Technical details:**
-- New column: `allowMultipleMessagesOverride` in `Chat` table
+**Why this matters:**
+Some Shapes (e.g., roleplay characters) work better when they can send multiple short messages instead of one long block. Other rooms need concise single responses. Now you control it per-room.
+
+**Implementation:**
+- New column: `allowMultipleMessagesOverride` in `chats` table
 - Migration: `0063_allow_multiple_messages_override.sql`
-- Exposed in room settings API (`/api/chat/[id]/settings`)
-- Documented in `architecture/room-creation.md`
-
-**Why:**
-Some users wanted AI to send rapid-fire follow-ups in certain rooms but not others. Now you can configure this per room instead of per Shape.
+- Room creation/cloning inherits or copies the override
+- Settings API validates boolean/null
+- Message renderer respects override, falls back to Shape default
+- Architecture doc updated: `architecture/room-creation.md`
 
 ---
 
 ## New Room Presets (Roleplay, Casual, Smart)
 
-Added new preset categories with grouped selection UI.
+Expanded room preset library with grouped categories for easier selection.
 
 **What's new:**
-- **Smart presets:** Deep Research, etc.
-- **Casual presets:** General chatting
 - **Roleplay presets:** Character-based interactions
-- Grouped preset selector in room creation dialog
-- Preset picker in room AI settings modal
-- Auto-loads preset instructions into textarea
+- **Casual presets:** Relaxed, conversational AI
+- **Smart presets:** Deep research, structured thinking
+- Presets now grouped by category in UI
+- Automatic textarea loading when you select a preset
 
-**Technical details:**
-- Presets defined in `lib/constants/room-presets.ts`
-- Documented in `architecture/ROOM_SHAPE_SETTINGS.md`
-- Updated room creation dialog (Step 4)
-- Updated room AI settings modal
+**Where it shows up:**
+- Room creation dialog (Step 1)
+- Room AI settings modal (for existing rooms)
 
 **Why:**
-Users were confused by the flat list of presets. Grouping by category makes it easier to find the right starting point for your room.
+Users were confused by flat preset list. Grouping by use case makes it obvious which preset to pick.
+
+**Technical approach:**
+- Presets organized by category in `lib/constants/room-presets.ts`
+- Grouped selector in `create-room-dialog.tsx` and `room-ai-settings.tsx`
+- Architecture doc updated: `architecture/ROOM_SHAPE_SETTINGS.md`
 
 ---
 
-## Participant Badges Refactor
+## Participant Badge Visibility Refactor
 
-Fixed badge rendering logic to account for visibility state.
+Fixed badges not showing up consistently on user profiles and messages.
 
-**What changed:**
-- Badges now respect participant visibility settings
-- Fixed edge cases where badges weren't showing
-- Improved performance by reducing unnecessary re-renders
+**What we fixed:**
+- Refactored badge rendering logic to respect visibility settings
+- Badges now consistently appear in messages, profiles, and participant lists
+- No performance regression (checked rerender counts)
 
-**Technical details:**
-- Refactored badge logic in participant components
-- Added visibility checks to badge rendering pipeline
-- Optimized with React memoization
+**Why this was broken:**
+Badge visibility checks were scattered across components, causing race conditions. Now centralized.
+
+---
+
+## UI Improvements & Bug Fixes
+
+**Removed "Tools Setup" from Sidebar**
+
+Composio YouTube/Reddit connectors are gone, so we removed the "Tools" menu item from sidebar. Cleaner UI, less confusion.
+
+**Reply Context No Longer Shows Media Attachments**
+
+When replying to a message with images/videos, the reply context bar no longer renders full media previews. Just shows text content now. Cleaner, less distracting.
 
 **Before:**
-Badges would sometimes disappear or show for invisible participants.
+Reply bar showed full image previews, taking up tons of vertical space.
 
 **After:**
-Badges consistently render only for visible participants.
+Reply bar shows "Replying to [username]: [text]" without media bloat.
 
----
+**Message Context Menu Max Height**
 
-## Bug Fixes & UX Improvements
+Context menu (right-click on messages) now has max height and scrolls. No more menus extending off-screen on mobile.
 
-**Fixed Badges Not Showing Up Sometimes**
+**Variant Cycle Controls Fix**
 
-Participant badges were inconsistently rendering. Fixed race condition in visibility state checks.
-
-**Fixed Variant Cycle Controls When No Labels**
-
-Message variant cycling broke when messages had no labels. Now handles edge case gracefully.
+Fixed regenerate variant arrows not showing when message has no labels. Now works correctly.
 
 **Removed "Logged Out Experience Coming Soon" Text**
 
-Cleaned up logged-out view by removing placeholder text that was never implemented.
+Cleaned up placeholder text on logged-out landing page.
 
-**Removed Sidebar Tools Setup**
+**Onboarding Modal Commented Out (Hotfix)**
 
-Dropped "Tools" option from sidebar user menu now that Composio tools are deprecated. Also removed YouTube/Reddit authentication popup.
+Temporarily disabled onboarding modal due to bug. Will re-enable after fix.
 
-**Don't Render Media Links as Attachments in Reply Area**
+**New Hook: `use-user-owned-shapes`**
 
-Media link previews no longer show as attachment cards in "Replying to..." area. Cleaner UI, less clutter.
-
-**Limited Max Height for Message Context Menu**
-
-Message right-click menu was getting too tall with many options. Now scrolls after a certain height.
-
-**Added Back Onboarding Modal (Commented Out)**
-
-Re-added onboarding modal code (commented out) for future use. Not active yet.
-
-**New Hook to Grab User-Owned Shapes**
-
-Created `useUserOwnedShapes()` hook for fetching Shapes created by the current user. Powers upcoming Shape management UI.
+Added hook to fetch Shapes owned by a specific user. Used for profile pages and Shape management.
 
 ---
 
-*Shipped by the team at [shapes.inc](http://shapes.inc). Got feedback? Drop it in #suggestions or the new forums!*
+*Shipped by the team at [shapes.inc](http://shapes.inc). Got feedback? Post it in the new [Forums](/forums)!*
