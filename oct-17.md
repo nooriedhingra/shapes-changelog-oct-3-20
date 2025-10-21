@@ -1,61 +1,137 @@
 # Shapes.inc Changelog - October 17, 2025
 
-## Improved Room Search with Debouncing
+## Real-Time Sidebar Activity Updates
 
-Room search now debounces input to reduce unnecessary API calls.
+Sidebar now updates in real-time for all room activity.
 
-**What changed:**
-- 300ms debounce on search input
-- Fewer API requests while typing
-- Faster, smoother search experience
-- Loading indicator during debounce
+**What's new:**
+- Unread indicators update instantly
+- Room list reorders on new messages
+- DM notifications appear immediately
+- No manual refresh needed
 
-**Why:**
-Search was firing on every keystroke, causing API spam and stuttery UI. Debouncing batches requests for better performance.
+**How it works:**
+- WebSocket events for all room changes
+- Real-time unread count tracking
+- Automatic room list sorting
+- Instant UI updates
 
 **Technical details:**
-- Uses `useDebouncedValue` hook
-- 300ms delay (sweet spot for perceived responsiveness)
-- Documented in search architecture
+- Migrated from polling to WebSocket
+- Global event system for room updates
+- Optimized rerender logic
+- Fixed timezone handling for timestamps
+- Simplified last-seen tracking
+
+**Why:**
+Sidebar was stale and required manual refresh. Real-time updates make chat feel alive and responsive.
 
 ---
 
-## Fixed Message Attachment Preview Rendering
+## Readme Channel Feature
 
-Fixed edge cases where image/video attachments wouldn't preview properly.
+New special channel type for room documentation.
 
-**What we fixed:**
-- Attachments with unusual MIME types now preview correctly
-- Better fallback for unsupported formats
-- Consistent preview behavior across all message types
+**What's new:**
+- Readme tab in room header
+- Markdown-formatted room documentation
+- Edit access for room owners/mods
+- Always visible to all room members
+
+**How it works:**
+- Room settings → Enable Readme
+- Create/edit Readme content
+- Shows as tab in room header
+- Supports full Markdown formatting
 
 **Technical details:**
-- Updated attachment preview component
-- Added MIME type validation
-- Graceful degradation for unknown types
+- New Readme block type
+- Stored in room metadata
+- Markdown renderer (same as messages)
+- Permission-based editing
+
+**Why:**
+Rooms needed persistent documentation for rules, guides, FAQs. Readme channel provides dedicated space for this.
+
+---
+
+## @everyone Mention Support
+
+Mention all room participants at once.
+
+**What's new:**
+- Type `@everyone` to mention all members
+- Shows in mentions inbox for all participants
+- Only room owner can use (prevents spam)
+- Highlighted in yellow like regular mentions
+
+**How it works:**
+- Type `@everyone` in message
+- All room participants get mention notification
+- Appears in mentions inbox
+- Click to jump to message
+
+**Technical details:**
+- New mention type in markdown parser
+- Special notification handling
+- Permission check (owner only)
+- Highlighted rendering
+
+**Why:**
+Room owners needed way to notify all members for announcements. @everyone solves this.
+
+---
+
+## Shape Directory UI Improvements
+
+Better Shape discovery experience.
+
+**What improved:**
+- Do not format shape directory URLs as pills (cleaner)
+- Fixed Shape card layout
+- Better dark mode colors
+- Add return button on directory pages
+- Create/add Shapes modal improvements
+
+**Technical details:**
+- URL parsing improvements
+- Dark mode color adjustments
+- Modal UX enhancements
+
+**Why:**
+Shape directory had small UI issues making it hard to use. These fixes polish the experience.
 
 ---
 
 ## Bug Fixes & UX Improvements
 
-**Removed Legacy Notification Code**
+**Room Search Fullscreen on Mobile**
 
-Cleaned up old notification system code that was replaced by new architecture.
+Room search modal now opens fullscreen on smartphones (was tiny and hard to use).
 
-**Improved Error Messages**
+**Fixed Incorrect Room Pill Rendering**
 
-Better error messaging throughout the app:
-- More specific error descriptions
-- Helpful suggestions for resolution
-- Less technical jargon
+Room links in messages now render correctly as pills (was showing raw URLs sometimes).
 
-**Fixed Sidebar Scroll Position**
+**Fixed Video Call Toolbar on iOS**
 
-Sidebar now properly maintains scroll position when switching rooms.
+iOS video call toolbar now shows properly (was cut off at bottom).
 
-**Before:** Sidebar would jump to top every time you switched rooms.
+**Double Tap to Maximize Video Tile**
 
-**After:** Sidebar stays at your scroll position.
+Double tap any video tile to maximize it (mobile gesture support).
+
+**Show Activity Status for Shapes**
+
+Shapes now show "Active", "Idle", or "Offline" status in sidebar and participant list.
+
+**Increased Activity Indicator Timeout**
+
+"Typing..." indicator now persists longer (less flickering).
+
+**Improved Upvoting Dark Mode Colors**
+
+Better contrast for vote buttons in dark mode (green/red more visible).
 
 ---
 
