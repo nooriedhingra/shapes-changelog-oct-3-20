@@ -1,189 +1,174 @@
 # Shapes.inc Changelog - October 16, 2025
 
-## Prevented Double-Send of Voice Messages on Mobile
+## Room Discovery with Upvote/Downvote System
 
-Fixed bug where voice messages would send twice on mobile devices.
-
-**What was happening:**
-- Record voice message on mobile → sends twice
-- Created duplicate messages in chat
-- Confusing for users and recipients
-
-**Root cause:**
-Mobile touch events were firing both `touchend` and `click`, triggering send twice.
-
-**Solution:**
-- Debounce send logic
-- Track send state to prevent duplicate submissions
-- Mobile-specific event handling
-
-**Technical details:**
-- Updated voice message component
-- Added send state guard
-- Documented in mobile interaction notes
-
----
-
-## Improved Custom Instructions UX
-
-Moved custom instructions to bottom of interface and increased height for better usability.
-
-**What changed:**
-- Custom instructions field now at bottom of chat settings
-- Increased textarea height (3 → 5 lines visible)
-- Better mobile layout
-- Removed markdown formatting (plain text only)
-
-**Why:**
-Custom instructions were hidden in the middle of settings. New placement makes them more discoverable and easier to edit.
-
-**Technical details:**
-- Updated room AI settings layout
-- Simplified instruction input (no markdown parser)
-- Consistent with other long-form text inputs
-
----
-
-## Typing Indicator Auto-Cleanup Extended to 60m
-
-Extended typing indicator timeout from 30 minutes to 60 minutes with updated documentation.
-
-**What changed:**
-- Typing indicators now persist for 60 minutes before auto-cleanup
-- Updated docs and comments
-- More forgiving for slow typers / long-form messages
-
-**Why:**
-30-minute timeout was too aggressive. Users writing long messages would see typing indicator disappear mid-composition.
-
-**Technical details:**
-- Updated Redis TTL logic
-- Documented in `architecture/TYPING_INDICATORS.md`
-
----
-
-## Skill Preset Automation (Frontend)
-
-New UI for managing automated skill presets in room settings.
+Vote-based discovery for finding the best rooms.
 
 **What's new:**
-- Preset dropdown for common skill combinations
-- One-click skill configuration
-- Presets include: Code Assistant, Research, Creative Writing, etc.
-- Save custom presets
-
-**Technical details:**
-- Frontend UI shipped
-- Backend automation logic coming next
-- Documented in skills architecture
-
----
-
-## Locked Rooms Feature
-
-Room owners can now lock/unlock their rooms to prevent new participants from joining.
+- Upvote/downvote rooms in directory
+- Vote-based sorting (show highest rated first)
+- Your votes are saved per-account
+- Room score visible on cards
 
 **How it works:**
-- Room settings → Lock toggle
-- Locked rooms show 🔒 icon in directory
-- New users can't join locked rooms
-- Existing participants unaffected
-- Editorial rooms can be locked by staff
-
-**Why we built this:**
-Room owners wanted to pause growth or limit rooms to existing members without making them private.
+- Browse /rooms directory
+- Click ▲ to upvote (good room)
+- Click ▼ to downvote (not for you)
+- Sort by: Hot (votes), Recent (activity), New (created)
 
 **Technical details:**
-- New `isLocked` column in rooms table
-- Lock status shown in directory cards
-- Join page blocks new participants
-- Lock/unlock API route
-- Documented in architecture notes
+- Room votes table (user_id, room_id, vote)
+- Real-time vote aggregation
+- Vote-based ranking algorithm
+- Prevents duplicate votes
+
+**Why:**
+Room directory had no quality signal. Upvotes surface the best rooms and help users find value faster.
 
 ---
 
-## /purge Command
+## Shape Discovery with Upvote/Downvote System
 
-New moderation command for bulk message deletion.
+Vote-based discovery for finding the best Shapes.
+
+**What's new:**
+- Upvote/downvote Shapes in directory
+- Vote-based sorting (show highest rated first)
+- Your votes are saved per-account
+- Shape score visible on cards
+- New modal for adding Shapes to rooms
+- Footer on directory pages
+- Better dark mode colors
 
 **How it works:**
-- Type `/purge @username 50` → deletes last 50 messages from that user
-- Type `/purge 100` → deletes last 100 messages from anyone
-- Only room owners and moderators can use
-- Confirmation modal before deletion
+- Browse /shapes directory
+- Click ▲ to upvote (good Shape)
+- Click ▼ to downvote (not for you)
+- Sort by: Hot (votes), Recent (added), Popular (usage)
 
 **Technical details:**
-- New command handler in moderation system
-- Batch deletion API
-- Audit logging for purge actions
-- Documented in moderation commands
+- Shape votes table (user_id, shape_id, vote)
+- Real-time vote aggregation
+- Vote-based ranking algorithm
+- Improved dark mode contrast for vote buttons
 
 **Why:**
-Moderators needed faster way to clean up spam or inappropriate content. Manual deletion was too slow.
+Shape directory had no quality signal. Upvotes surface the best Shapes and help users discover valuable AI companions.
 
 ---
 
-## Commands Menu Reordering
+## Voice Calls Status Indicators
 
-Reorganized command menu for better discoverability.
+See who's in voice calls directly from the sidebar.
 
-**New order:**
-1. /imagine (most used)
-2. /web
-3. /purge
-4. /slowmode
-5. /ban
-6. /kick
+**What's new:**
+- Voice call indicator badge on sidebar rooms
+- "In call" status shows participant count
+- Click to join active call
+- Real-time status updates
+
+**Where you'll see it:**
+- Sidebar room list (green phone icon)
+- Room header (shows active call)
+- Join button appears when call is active
+
+**Technical details:**
+- WebSocket-based status updates
+- Batched voice status API calls (performance)
+- Real-time participant tracking
+- Efficient sidebar rendering
 
 **Why:**
-Old alphabetical order buried frequently-used commands. New order prioritizes by usage frequency.
+You couldn't tell if a voice call was active without opening the room. Now you can see and join calls at a glance.
 
 ---
 
-## Refactored User Message Notifications
+## Voice Call UI Improvements
 
-Backend improvements for notification delivery.
+Better video call experience across devices.
 
-**What changed:**
-- Cleaner notification dispatch logic
-- Better error handling
-- Suppressed errors in user DM notification flows
-- More reliable delivery
+**What improved:**
+- Maximize video overlay size on desktop
+- Fix video call toolbar on iOS
+- Fix tile sizes for better layout
+- Double tap to maximize video tile (mobile)
+- Add banners to video tiles (show profile pics)
 
 **Technical details:**
-- Updated notification service
-- Added fallback logic for failed sends
-- Documented in `architecture/NOTIFICATIONS.md`
+- Responsive tile sizing algorithm
+- Touch gesture support (double tap)
+- iOS-specific UI adjustments
+- Optimized video rendering
+
+**Why:**
+Voice call UI wasn't optimized for different screen sizes. These fixes make calls look better and work smoother everywhere.
+
+---
+
+## Engagement Analytics & Database Indexes
+
+Internal analytics improvements for understanding user behavior.
+
+**What's new:**
+- Comprehensive engagement metrics dashboard
+- Message volume tracking
+- Room activity metrics
+- Shape interaction stats
+- Database indexes for performance
+
+**Technical details:**
+- New database indexes on Message_v2 table (100M+ rows)
+- Prevents 5-30s query times
+- Optimized analytics queries
+- Hybrid pre/post July 8 approach
+
+**Why:**
+Analytics queries were timing out on large tables. Indexes make dashboards fast and usable.
 
 ---
 
 ## Bug Fixes & UX Improvements
 
-**Fixed Shape Name Prefix Duplication**
+**Real-Time Sidebar Updates**
 
-Assistant messages were showing redundant prefixes. Example: "Claude: ✅" now shows as just "✅".
+Sidebar now updates in real-time when:
+- New messages arrive
+- Rooms created/deleted
+- Unread counts change
+- Room activity updates
 
-**Before:** Message showed Shape name twice (in metadata AND in message body).
+No more manual refreshes needed. Uses WebSocket events for instant updates.
 
-**After:** Shape name only in metadata, message body clean.
+**Fixed Shape Selection in Room Creation**
 
-**Auto-Collapse Long Messages**
+Composer doesn't auto-close after selecting a shape during room creation (was annoying).
 
-Long messages (>500 chars) now automatically collapse with "Show more" button.
+**Improved Dark Mode for Upvoting**
 
-**Why:** Massive walls of text were overwhelming chat. Now they're hidden by default.
+Better contrast and colors for vote buttons in dark mode.
 
-**Hidden Emoji Icon on Mobile**
+**Reddit Icon in Footer**
 
-Emoji picker button now hidden on mobile (keyboard emoji picker is better UX).
+Added Reddit link to footer with proper FontAwesome icon.
 
-**Fixed Typing Indicator PFP Redirect**
+**Mobile Voice Call Experience**
 
-Clicking profile picture in typing indicator no longer incorrectly redirects to shapes.inc. Now goes to user profile.
+Improved mobile UX for voice calls:
+- Better touch targets
+- Responsive controls
+- Cleaner layout on small screens
 
-**Reverted Shape Reply Style Toggle**
+**Activity Indicator Timeout**
 
-Rolled back experimental reply styling due to user feedback.
+Increased timeout for "typing..." indicator (was disappearing too fast).
+
+**Fixed `/create` Pill Parsing**
+
+`/create` in messages no longer renders as a clickable pill (was confusing).
+
+**Hide Premium Features During App Review**
+
+Temporarily hid premium features for App Store review process.
 
 ---
 
