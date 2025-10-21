@@ -1,91 +1,29 @@
 # Shapes.inc Changelog - October 1, 2025
 
-## 🎨 New Features
+## October 1, 2025
 
-### Read Out Loud
-**PR [#1700](https://github.com/shapesinc/shapes-chat/pull/1700)** by @bielmorales  
-**PR [#3145](https://github.com/shapesinc/app/pull/3145)** by @bielmorales
-- New voice playback feature for chat messages
-- Backend endpoint + frontend UI implementation
-- 258 backend additions, 363 frontend additions
-- **Impact**: Users can now listen to messages with AI-generated voice
+**Read Out Loud**
 
-### Fanclub Card
-**PR [#1490](https://github.com/shapesinc/shapes.inc/pull/1490)** by @hiidhruv
-- New fanclub card component for shapes.inc
-- 140 additions, 7 deletions
-- **Impact**: Visual representation of shape fan communities
+Click the three dots on any message to hear it played back as audio. Requires $500 credit balance to access (feature itself is free to use after that).
 
-### Tools List UI
-**PR [#1703](https://github.com/shapesinc/shapes-chat/pull/1703)** by @francip  
-**PR [#3146](https://github.com/shapesinc/app/pull/3146)** by @francip
-- Display individual tools in provider UI
-- 962 frontend additions, 649 backend additions
-- **Impact**: Better tool discoverability and transparency
+**MCP Tool Visibility**
 
-### Chat Participant Badges
-**PR [#1704](https://github.com/shapesinc/shapes-chat/pull/1704)** by @bielmorales  
-**PR [#3148](https://github.com/shapesinc/app/pull/3148)** by @bielmorales
-- Auto-assign participant badges for sponsored rooms
-- 104 frontend additions, 69 backend additions
-- **Impact**: Visual recognition for sponsored room participants
+See the full list of tools and their descriptions attached to each MCP server when designing rooms. Makes it easier to understand what skills your shape will have before you start chatting.
 
-## 🔧 Improvements
+**Sponsor Badges**
 
-### Tool Evaluator Schema Alignment
-**PR [#3150](https://github.com/shapesinc/app/pull/3150)** by @seanulacra
-- Synced eval harness with runtime `normalize_tools`
-- Record provider validation failures as `tools_schema_rejected:*`
-- 1,088 additions, 315 deletions
-- **Impact**: Production-grade schema validation, catches more errors
+Room sponsors now get a `[sponsor]` badge next to their name. Badges stack if you're eligible for multiple—for example, you might have both a shapes.inc global badge and a sponsor badge for a specific room.
 
-### Better Reply Context
-**PR [#1697](https://github.com/shapesinc/shapes-chat/pull/1697)** by @hiidhruv
-- Show full target message in reply context instead of just link
-- 85 additions, 8 deletions
-- **Impact**: More contextual information for shapes responding to replies
+**Better Reply Context**
 
-### MCP Documentation Link
-**PR [#1688](https://github.com/shapesinc/shapes-chat/pull/1688)** by @anushkmittal
-- Added MCP docs link under "Shape Skills" in room settings
-- 11 additions
-- **Impact**: Easier access to MCP setup documentation
+When you reply to a message, shapes now receive the actual quoted text instead of just a message link.
 
-### Terminology Standardization
-**PR [#1686](https://github.com/shapesinc/shapes-chat/pull/1686)** by @anushkmittal  
-**PR [#1692](https://github.com/shapesinc/shapes-chat/pull/1692)** by @anushkmittal  
-**PR [#1693](https://github.com/shapesinc/shapes-chat/pull/1693)** by @anushkmittal
-- Renamed "tool calls" → "shapes actions" → "skills used"
-- Consistent terminology across frontend
-- **Impact**: Clearer, more user-friendly language
+**Fan Rooms**
 
-## 🐛 Bug Fixes
+Every shape now has an auto-generated public fan room (e.g., "tenshi's fans"). Accessible from the shape directory and shapes.inc/[shapename]. The shape's creator is marked as the room owner.
 
-### Voice Transcription Hotfix
-**PR [#3149](https://github.com/shapesinc/app/pull/3149)** by @bielmorales
-- Fixed NoneType error for voice_transcription_url
-- 1 addition, 1 deletion
-- **Impact**: Prevents crashes when voice transcription URL is missing
+**Improvements**
 
-### Shape Interaction Modal Fix
-**PR [#1696](https://github.com/shapesinc/shapes-chat/pull/1696)** by @hiidhruv
-- Fixed broken shape interaction modal on shape directory
-- 33 additions, 14 deletions
-- **Impact**: Users can now interact with shapes from directory again
-
-### UI Refinements
-**PR [#1699](https://github.com/shapesinc/shapes-chat/pull/1699)** by @nooriedhingra  
-**PR [#1701](https://github.com/shapesinc/shapes-chat/pull/1701)** by @loamyx  
-**PR [#1694](https://github.com/shapesinc/shapes-chat/pull/1694)** by @hiidhruv  
-**PR [#1695](https://github.com/shapesinc/shapes-chat/pull/1695)** by @hiidhruv
-- Removed "Open DM" from user hover pills
-- Removed Private/Public tags from Chat Now menu
-- Increased highlight height for better visibility
-- Reinstated previous UI improvements
-
----
-
-**Total**: 15 merged PRs
-- **shapesinc/app**: 5 PRs
-- **shapesinc/shapes-chat**: 9 PRs
-- **shapesinc/shapes.inc**: 1 PR
+- Removed "Open DM" button from chat menu
+- Removed Private/Public tags from chat menu for cleaner UI
+- Fixed shape interaction modal on room directory
